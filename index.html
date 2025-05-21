@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Compiler Frontend</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Mini Compiler</h1>
+  <textarea id="code-input" rows="10" cols="50" placeholder="Enter your code here..."></textarea>
+
+  <button id="run-btn">Run Code</button>
+
+  <h2>Tokens</h2>
+<div class="output-wrapper">
+  <pre id="tokens-output" class="output-box"></pre>
+</div>
+
+<h2>Parse Tree</h2>
+<div class="output-wrapper">
+  <pre id="parse-output" class="output-box"></pre>
+</div>
+
+<h2>Three-Address Code (TAC)</h2>
+<div class="output-wrapper">
+  <pre id="tac-output" class="output-box"></pre>
+</div>
+
+<h2>Final Output</h2>
+<div class="output-wrapper">
+  <pre id="final-output" class="output-box"></pre>
+</div>
+
+
+  <script>
+    document.getElementById('run-btn').addEventListener('click', () => {
+      const codeInput = document.getElementById('code-input').value;
+
+      fetch('/api/compile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: codeInput }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        const allOutput = data.output || '';
+
+        
+        const sections = {
+          tokens: extractSection(allOutput, '=== TOKENS ===', '=== PARSE TREE ==='),
+          parse: extractSection(allOutput, '=== PARSE TREE ===', '=== THREE-ADDRESS CODE'),
+          tac: extractSection(allOutput, '=== THREE-ADDRESS CODE', '=== FINAL OUTPUT ==='),
+          final: extractSection(allOutput, '=== FINAL OUTPUT ===')
+        };
+
+        document.getElementById('tokens-output').textContent = sections.tokens.trim();
+        document.getElementById('parse-output').textContent = sections.parse.trim();
+        document.getElementById('tac-output').textContent = sections.tac.trim();
+        document.getElementById('final-output').textContent = sections.final.trim();
+      })
+      .catch(error => {
+        document.getElementById('final-output').textContent = 'Error: ' + error.message;
+        console.error('Fetch error:', error);
+      });
+    });
+
+    function extractSection(text, start, end = null) {
+      const startIdx = text.indexOf(start);
+      if (startIdx === -1) return '';
+      const endIdx = end ? text.indexOf(end, startIdx + start.length) : text.length;
+      return text.substring(startIdx, endIdx);
+    }
+  </script>
+</body>
+</html>
