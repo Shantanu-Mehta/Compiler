@@ -9,7 +9,7 @@ app.post('/api/compile', (req, res) => {
     const code = req.body.code;
     console.log('Received code:', code);
 
-    const executable = process.platform === 'win32' ? 'mini_compiler.exe' : './mini_compiler';
+    const executable = process.platform === 'win32' ? 'mini_compile.exe' : './mini_compile';
 
     const child = spawn(executable);
 
@@ -31,18 +31,16 @@ app.post('/api/compile', (req, res) => {
 
     child.on('close', (code) => {
         console.log(`Child process exited with code ${code}`);
+        console.log('Compiler stdout:', output);
+        console.log('Compiler stderr:', errorOutput);
 
-        if (errorOutput) {
-            console.error('Compiler stderr:', errorOutput);
-            
-            return res.json({ error: errorOutput.trim() });
-        }
-
-   
-        res.json({ output: output.trim() });
+        
+        res.json({
+            output: output.trim(),
+            stderr: errorOutput.trim()
+        });
     });
 
-    
     child.stdin.write(code);
     child.stdin.end();
 });
