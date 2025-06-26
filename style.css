@@ -1,57 +1,125 @@
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #a9a5a5;
-    color: #1d1c1c;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #d3cce3, #e9e4f0);
+  margin: 0;
+  padding: 30px;
+  color: #333;
 }
 
+
+h1 {
+  text-align: center;
+  font-size: 3rem;
+  color: #1a1a1a;
+  margin-bottom: 30px;
+}
+
+
 textarea {
-  width: 100%;
-  min-height: 200px;   
-  height: 300px;         
-  max-height: 600px;  
-  font-family: monospace;
-  font-size: 18px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;      
-  box-sizing: border-box;
+  display: block;
+  width: 90%;
+  margin: 0 auto 30px auto;
+  padding: 15px;
+  font-family: 'Fira Code', monospace;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+  background: #fff;
+  color: #000;
+}
+
+
+button#run-btn {
+  display: block;
+  margin: 0 auto 40px auto;
+  padding: 12px 30px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+button#run-btn:hover {
+  background-color: #218838;
+}
+
+button#run-btn:active {
+  transform: scale(0.97);
+}
+
+
+h2 {
+  color: #2c3e50;
+  text-align: center;
+  margin-top: 40px;
 }
 
 
 .output-wrapper {
-    margin-bottom: 20px;
+  width: 90%;
+  margin: 20px auto;
+  border-left: 4px solid #28a745;
+  padding-left: 10px;
+  transition: transform 0.3s ease;
 }
 
+.output-wrapper:hover {
+  transform: scale(1.01);
+}
+
+
 .output-box {
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   border: 1px solid #ccc;
-  padding: 12px;
+  padding: 15px;
   min-height: 150px;
   max-height: 300px;
   overflow-y: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
   font-family: monospace;
-  font-size: 18px;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  resize: vertical;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
 
 
-button {
+#error-output {
+  background-color: #fff5f5;
+  border: 1px solid #ff4d4f;
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+
+.output-box::-webkit-scrollbar {
+  width: 8px;
+}
+.output-box::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+.output-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+@media (max-width: 600px) {
+  textarea, .output-wrapper {
+    width: 95%;
+    font-size: 14px;
+  }
+
+  button#run-btn {
+    font-size: 1rem;
     padding: 10px 20px;
-    font-size: 18px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-button:hover {
-    background-color: #0056b3;
+  }
 }
