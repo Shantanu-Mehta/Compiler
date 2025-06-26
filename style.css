@@ -1,85 +1,125 @@
-#include "symbol_table.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
 
-#define MAX_SYMBOLS 100
-#define ALLOW_AUTO_DECLARE 0  
-
-typedef struct {
-    char name[100];
-    int value;
-    int declared;
-} Symbol;
-
-static Symbol symbols[MAX_SYMBOLS];
-static int symbol_count = 0;
-
-
-void declare_variable(const char* name) {
-    for (int i = 0; i < symbol_count; ++i) {
-        if (strcmp(symbols[i].name, name) == 0) {
-            fprintf(stderr, "Semantic Error: Variable '%s' already declared.\n", name);
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    if (symbol_count >= MAX_SYMBOLS) {
-        fprintf(stderr, "Symbol table overflow.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    Symbol* sym = &symbols[symbol_count++];
-    strncpy(sym->name, name, sizeof(sym->name) - 1);
-    sym->name[sizeof(sym->name) - 1] = '\0';
-    sym->value = 0;
-    sym->declared = 1;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #d3cce3, #e9e4f0);
+  margin: 0;
+  padding: 30px;
+  color: #333;
 }
 
 
-void set_variable(const char* name, int value) {
-    for (int i = 0; i < symbol_count; ++i) {
-        if (strcmp(symbols[i].name, name) == 0) {
-            symbols[i].value = value;
-            return;
-        }
-    }
-
-#if ALLOW_AUTO_DECLARE
-    declare_variable(name);
-    set_variable(name, value);
-#else
-    fprintf(stderr, "Semantic Error: Variable '%s' not declared before assignment.\n", name);
-    exit(EXIT_FAILURE);
-#endif
+h1 {
+  text-align: center;
+  font-size: 3rem;
+  color: #1a1a1a;
+  margin-bottom: 30px;
 }
 
 
-int get_variable(const char* name) {
-    for (int i = 0; i < symbol_count; ++i) {
-        if (strcmp(symbols[i].name, name) == 0) {
-            return symbols[i].value;
-        }
-    }
-
-    fprintf(stderr, "Semantic Error: Variable '%s' used without declaration.\n", name);
-    exit(EXIT_FAILURE);
+textarea {
+  display: block;
+  width: 90%;
+  margin: 0 auto 30px auto;
+  padding: 15px;
+  font-family: 'Fira Code', monospace;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+  background: #fff;
+  color: #000;
 }
 
 
-void reset_symbol_table() {
-    symbol_count = 0;
+button#run-btn {
+  display: block;
+  margin: 0 auto 40px auto;
+  padding: 12px 30px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+button#run-btn:hover {
+  background-color: #218838;
+}
+
+button#run-btn:active {
+  transform: scale(0.97);
 }
 
 
-void print_symbol_table() {
-    printf("=== SYMBOL TABLE ===\n");
-    for (int i = 0; i < symbol_count; ++i) {
-        printf("  %s = %d (declared: %s)\n",
-               symbols[i].name,
-               symbols[i].value,
-               symbols[i].declared ? "yes" : "no");
-    }
-    printf("====================\n");
+h2 {
+  color: #2c3e50;
+  text-align: center;
+  margin-top: 40px;
+}
+
+
+.output-wrapper {
+  width: 90%;
+  margin: 20px auto;
+  border-left: 4px solid #28a745;
+  padding-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.output-wrapper:hover {
+  transform: scale(1.01);
+}
+
+
+.output-box {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+
+#error-output {
+  background-color: #fff5f5;
+  border: 1px solid #ff4d4f;
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+
+.output-box::-webkit-scrollbar {
+  width: 8px;
+}
+.output-box::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+.output-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+@media (max-width: 600px) {
+  textarea, .output-wrapper {
+    width: 95%;
+    font-size: 14px;
+  }
+
+  button#run-btn {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
 }
