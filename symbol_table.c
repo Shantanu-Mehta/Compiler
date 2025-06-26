@@ -2,46 +2,84 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define MAX_SYMBOLS 100
+#define ALLOW_AUTO_DECLARE 0  
 
 typedef struct {
     char name[100];
     int value;
+    int declared;
 } Symbol;
 
-static Symbol table[MAX_SYMBOLS];
+static Symbol symbols[MAX_SYMBOLS];
 static int symbol_count = 0;
 
-void set_variable(const char* name, int value) {
+
+void declare_variable(const char* name) {
     for (int i = 0; i < symbol_count; ++i) {
-        if (strcmp(table[i].name, name) == 0) {
-            table[i].value = value;
-            return;
+        if (strcmp(symbols[i].name, name) == 0) {
+            fprintf(stderr, "Semantic Error: Variable '%s' already declared.\n", name);
+            exit(EXIT_FAILURE);
         }
     }
 
     if (symbol_count >= MAX_SYMBOLS) {
-        printf("Symbol table overflow. Cannot store variable '%s'\n", name);
-        exit(1);
+        fprintf(stderr, "Symbol table overflow.\n");
+        exit(EXIT_FAILURE);
     }
 
-    strcpy(table[symbol_count].name, name);
-    table[symbol_count].value = value;
-    symbol_count++;
+    Symbol* sym = &symbols[symbol_count++];
+    strncpy(sym->name, name, sizeof(sym->name) - 1);
+    sym->name[sizeof(sym->name) - 1] = '\0';
+    sym->value = 0;
+    sym->declared = 1;
 }
 
-int get_variable(const char* name) {
+
+void set_variable(const char* name, int value) {
     for (int i = 0; i < symbol_count; ++i) {
-        if (strcmp(table[i].name, name) == 0) {
-            return table[i].value;
+        if (strcmp(symbols[i].name, name) == 0) {
+            symbols[i].value = value;
+            return;
         }
     }
 
-    printf("Error: Undefined variable '%s'\n", name);
-    exit(1);
+#if ALLOW_AUTO_DECLARE
+    declare_variable(name);
+    set_variable(name, value);
+#else
+    fprintf(stderr, "Semantic Error: Variable '%s' not declared before assignment.\n", name);
+    exit(EXIT_FAILURE);
+#endif
 }
+
+
+int get_variable(const char* name) {
+    for (int i = 0; i < symbol_count; ++i) {
+        if (strcmp(symbols[i].name, name) == 0) {
+            return symbols[i].value;
+        }
+    }
+
+    fprintf(stderr, "Semantic Error: Variable '%s' used without declaration.\n", name);
+    exit(EXIT_FAILURE);
+}
+
 
 void reset_symbol_table() {
     symbol_count = 0;
+}
+
+
+void print_symbol_table() {
+    printf("=== SYMBOL TABLE ===\n");
+    for (int i = 0; i < symbol_count; ++i) {
+        printf("  %s = %d (declared: %s)\n",
+               symbols[i].name,
+               symbols[i].value,
+               symbols[i].declared ? "yes" : "no");
+    }
+    printf("====================\n");
 }
