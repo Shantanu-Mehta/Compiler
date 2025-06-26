@@ -1,39 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mini Compiler Frontend</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Mini Compiler</h1>
-  <textarea id="code-input" rows="10" cols="50" placeholder="Enter your code here..."></textarea>
+
+  
+  <textarea id="code-input" spellcheck="false" rows="10" cols="50" placeholder="Enter your code here..."></textarea>
 
   <button id="run-btn">Run Code</button>
 
   <h2>Tokens</h2>
-<div class="output-wrapper">
-  <pre id="tokens-output" class="output-box"></pre>
-</div>
+  <div class="output-wrapper">
+    <pre id="tokens-output" class="output-box">Waiting for input...</pre>
+  </div>
 
-<h2>Parse Tree</h2>
-<div class="output-wrapper">
-  <pre id="parse-output" class="output-box"></pre>
-</div>
+  <h2>Parse Tree</h2>
+  <div class="output-wrapper">
+    <pre id="parse-output" class="output-box">Waiting for input...</pre>
+  </div>
 
-<h2>Three-Address Code (TAC)</h2>
-<div class="output-wrapper">
-  <pre id="tac-output" class="output-box"></pre>
-</div>
+  <h2>Three-Address Code (TAC)</h2>
+  <div class="output-wrapper">
+    <pre id="tac-output" class="output-box">Waiting for input...</pre>
+  </div>
 
-<h2>Final Output</h2>
-<div class="output-wrapper">
-  <pre id="final-output" class="output-box"></pre>
-</div>
+  <h2>Final Output</h2>
+  <div class="output-wrapper">
+    <pre id="final-output" class="output-box">Waiting for input...</pre>
+  </div>
 
+  <h2>Syntax Errors</h2>
+  <div class="output-wrapper">
+    <pre id="error-output" class="output-box">No syntax errors.</pre>
+  </div>
 
   <script>
     document.getElementById('run-btn').addEventListener('click', () => {
       const codeInput = document.getElementById('code-input').value;
+
+      document.getElementById('tokens-output').textContent = 'Processing...';
+      document.getElementById('parse-output').textContent = 'Processing...';
+      document.getElementById('tac-output').textContent = 'Processing...';
+      document.getElementById('final-output').textContent = 'Processing...';
+      document.getElementById('error-output').textContent = 'Processing...';
 
       fetch('/api/compile', {
         method: 'POST',
@@ -43,8 +57,8 @@
       .then(res => res.json())
       .then(data => {
         const allOutput = data.output || '';
+        const stderr = data.stderr || '';
 
-        
         const sections = {
           tokens: extractSection(allOutput, '=== TOKENS ===', '=== PARSE TREE ==='),
           parse: extractSection(allOutput, '=== PARSE TREE ===', '=== THREE-ADDRESS CODE'),
@@ -52,13 +66,15 @@
           final: extractSection(allOutput, '=== FINAL OUTPUT ===')
         };
 
-        document.getElementById('tokens-output').textContent = sections.tokens.trim();
-        document.getElementById('parse-output').textContent = sections.parse.trim();
-        document.getElementById('tac-output').textContent = sections.tac.trim();
-        document.getElementById('final-output').textContent = sections.final.trim();
+        document.getElementById('tokens-output').textContent = sections.tokens.trim() || 'No tokens found.';
+        document.getElementById('parse-output').textContent = sections.parse.trim() || 'No parse tree found.';
+        document.getElementById('tac-output').textContent = sections.tac.trim() || 'No TAC generated.';
+        document.getElementById('final-output').textContent = sections.final.trim() || 'No final output.';
+        document.getElementById('error-output').textContent = stderr.trim() || 'No syntax errors.';
       })
       .catch(error => {
         document.getElementById('final-output').textContent = 'Error: ' + error.message;
+        document.getElementById('error-output').textContent = 'Fetch error: ' + error.message;
         console.error('Fetch error:', error);
       });
     });
